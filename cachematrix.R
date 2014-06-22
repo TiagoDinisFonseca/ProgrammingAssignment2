@@ -59,6 +59,7 @@ cacheClean <- function(x) {
 	if(is.null(x$getinverse())) {
 		return(message("already clean"))
 	}
+
 	x$setinverse(NULL)
 	message("cleaning cached data")
 }
