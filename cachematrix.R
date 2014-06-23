@@ -1,50 +1,40 @@
-## This method creates a special matrix, which is really a list containing a function to
+## This method creates a special matrix which allows caching the inverse matrix.
+# It is is really a list containing a function to
 # 1. set the value of the matrix
 # 2. get the value of the matrix
 # 3. set the inverse matrix
 # 4. get the inverse matrix
-#
 makeCacheMatrix <- function(x = matrix()) {
-	# create a NULL inverse matrix xinv
-	xinv <- NULL
-	# set the matrix x, and its inverse to be NULL
-	set <- function(y) {
+	xinv <- NULL # create a NULL inverse matrix
+	set <- function(y) { # set the matrix to be x, and its inverse to be NULL
 		x <<- y
 		xinv <<- NULL
 	}
-	# returns the matrix x
-	get <- function () x
-	# set the inverse matrix of x
-	setinverse <- function(inv) xinv <<- inv
-	# returns the inverse matrix of x
-	getinverse <- function() xinv
-	# list all functions, essential if we want to use them elsewhere
+	get <- function () x # returns the matrix x
+	setinverse <- function(inv) xinv <<- inv # set the inverse matrix
+	getinverse <- function() xinv # returns the inverse matrix
 	list(set = set,
 		get = get,
 		setinverse = setinverse,
-		getinverse = getinverse)
+		getinverse = getinverse) # list all functions, essential if we want to use them elsewhere
 }
 
 
-## This method searches for the inverse matrix on the cache of x
-# if it does not find it, the method computes the inverse and puts on the cache
+## This method searches if the inverse matrix is cached
+# if not, the method computes the inverse and caches it
 cacheSolve <- function(x, ...) {
-	# gets the matrix x and its dimensions
-	xMatrix <- x$get()
+	xMatrix <- x$get() # gets the matrix x and its dimensions
 	nCol = ncol(xMatrix)
 	nRow = nrow(xMatrix)
-	# if it is not square it returns an error
-	if(nCol != nRow) { 
+	if(nCol != nRow) { # if it is not square it returns an error
 		return(message("fail: matrix should be square"))
 	}
-	# searches for its inverse on the cache
-	# if it finds it return its value
 	xInverse <- x$getinverse()
-	if(!is.null(xInverse)) {
-		message("getting cached data")
+	if(!is.null(xInverse)) { # searches for its inverse on the cache and it returns it
+		message("getting cached data: \n\tif you changed the parameters, you should clean the cache with cacheClean(matrix)")
 		return(xInverse)
 	}
-	#otherwise it computes the inverse and puts on the cache
+	#if it does not find it, it computes the inverse and caches it
 	xInverse <- solve(xMatrix, ...)
 	x$setinverse(xInverse)
 	xInverse
@@ -55,8 +45,7 @@ cacheSolve <- function(x, ...) {
 # and therefore the method cacheSolve will return the inverse matrix with the old parameters
 # If we clean the cache, this will not happen
 cacheClean <- function(x) {
-	# if it does not find an inverse there is nothing to do
-	if(is.null(x$getinverse())) {
+	if(is.null(x$getinverse())) { # if it does not find an inverse there is nothing to do
 		return(message("already clean"))
 	}
 	x$setinverse(NULL)
